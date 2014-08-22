@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title></title>
+</head>
+<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="http://localhost:8081/jsonpath.js"></script>
+
+
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.1.1.js"></script>
+<style>
+#URL{
+
+width: 500px;
+height: 36px;
+font-size: 20px;
+}
+#key,#testsuiteid{
+width: 500px;
+height: 36px;
+font-size: 20px;
+}
+
+#output{
+height: 102px;
+width: 297px;
+background: chartreuse;
+}
+
+#console{
+color:white;
+height: 102px;
+width: 297px;
+background: black;
+
+
+}
+button{
+
+height:40px;
+
+}
+</style>
+
+<script type="text/javascript">
+
+var socket = io.connect();
+
+function notification(content)
+{
+	var x= document.getElementById("storage");
+	x.innerHTML = content;
+    console.log(content);	
+}
+function testlink1(content1)
+{
+	var y= document.getElementById("storage1");
+	y.innerHTML = content1;
+    console.log(content1);	
+
+}
+
+
+$(document).ready(function(){
+
+			
+			$("input[type='button']").bind('click',function(){
+			
+			var inputParams={};
+			        inputParams.tool=$('#tool').val();
+					inputParams.devKey=$('#key').val();
+					inputParams.rpcUrl=$('#URL').val();
+					inputParams.testProjectId=$('#projectid').val();
+					inputParams.testsuiteid=$('#testsuiteid').val();
+					inputParams.testplanid=$('#testplanid').val();
+					inputParams.testcaseexternalid=$('#testcaseexternalid').val();	
+					inputParams.buildid=$('#buildid').val();
+					inputParams.platformname=$('#platformname').val();
+					inputParams.method=$(this).val();			
+					socket.emit('exeByParam',inputParams);
+					
+					
+			});
+});
+
+
+socket.on('notification', function(x) { notification(x); });	
+socket.on('testlink1', function(y) { testlink1(y); });
+
+
+
+
+socket.on("getProjects",function(response){
+$("#output").empty();
+response.forEach(function(element){
+
+$("#output").append("<br>Project Name: "+element.struct.name);
+
+});
+});
+
+
+socket.on("Authenticate",function(response){
+$("#output").empty();
+if(response.boolean==1)
+{
+$("#output").append("<br>Autheticated");
+}
+else
+{
+$("#output").append("<br>Not Autheticated ");
+}
+console.log(response);
+});
+
+
+socket.on("GetTestCasesFlagExecution",function(result){
+$("#output").empty();
+result.forEach(function(element){
+
+$("#output").append("<br>TestCase: "+element.struct.name);
+
+});
+console.log(result);
+});
+
+
+socket.on("getBuildsForTestPlan",function(response){
+
+
+$("#output").empty();
+response.forEach(function(element){
+
+$("#output").append("<br>BuildName: "+element.struct.name);
+
+});
+console.log(response);
+});
+
+
+socket.on("getProjectTestPlans",function(result){
+
+$("#output").empty();
+result.forEach(function(element){
+
+$("#output").append("<br>TestPlan Name: "+element.struct.name);
+
+});
+
+console.log(result);
+});
+
+
+socket.on("getTestCase",function(response){
+
+if(!Array.isArray(response))
+response=[response];
+
+$("#output").empty();
+response.forEach(function(element){
+$("#output").append("<br>TestCase Name: "+element.struct.name);
+});
+
+console.log(response);
+});
+
+
+socket.on("getTestCasesForTestPlan",function(response){
+
+console.log(response);
+ var testcase=jsonPath.eval(response, '$..tcase_name');
+ console.log(testcase);
+ 
+			$("#output").empty();
+			testcase.forEach(function(element){
+			$("#output").append("<br>TestCase Name: "+element);
+			});
+console.log(response);
+});
+
+
+socket.on("getTestSuitesForTestSuite",function(response){
+$("#output").empty();
+$("#output").append("<br>SuiteName Name: "+response.string);
+console.log(response);
+});
+
+
+socket.on("getTestSuitesForTestPlan",function(response){
+$("#output").empty();
+$("#output").append("<br>Suite Name: "+response.struct.name);
+console.log(response);
+});
+
+
+function callserver()
+{
+	socket.emit('called');	 
+
+}	
+
+</script>
+
+<body>
+<h1>TestLink Node Server</h1>
+
+<fieldset><legend>Message</legend>
+	<div id="storage"></div>
+</fieldset>
+
+<fieldset><legend>TestLink Response</legend>
+	<div id="storage1"></div>
+</fieldset>
+
+<br><label>Please Select an Option:</label>
+<select id='tool'>
+<option value="testlink">TestLink</option>
+<option value="QC">Quality Center</option>
+<option value="no"></option>
+
+</select><br>
+
+RPC URL:<input type="text" id="URL"  ></input><br>
+Authentication Key:<input type="text" id='key'></input><br>
+EnterTestSuiteID:<input type="text" id="testsuiteid"  ></input><br>
+EnterProjectID:<input type="text" id="projectid"  placeholder=></input><br>
+EnterTestPlanID:<input type="text" id="testplanid"  placeholder=></input><br>
+EnterTestCaseExternalID:<input type="text" id="testcaseexternalid"></input><br>
+BuildId:<input type="text" id="buildid"></input><br>
+PlatformName:<input type="text" id="platformname"></input><br>
+
+
+
+
+<input type="button"  value="Authenticate" id ="authenticate">
+<input type="button"  value="GetTestCasesFlagExecution" id ="gettestcases">
+<input type="button"  value="ExecuteEntaireSuite" id ="suite">
+<input type="button"  value="getBuildsForTestPlan" id ="getBuildsForTestPlan">
+<input type="button"  value="getProjectTestPlans" id ="getProjectTestPlans">
+<input type="button"  value="getProjects" id ="getProjects">
+<input type="button"  value="getTestCase" id ="getTestCase">
+<input type="button"  value="getTestCasesForTestPlan" id ="getTestCasesForTestPlan">
+<input type="button"  value="getTestSuitesForTestSuite" id ="getTestSuitesForTestSuite">
+<input type="button"  value="getTestSuitesForTestPlan" id ="getTestSuitesForTestPlan">
+<br><br>
+
+<div id='output'></div>
+
+<div id='console'></div>
+<form name="form1" method="post" action="">
+<input type="button"  value="Call server" onClick="callserver()">
+  
+</form>
+</body>
+</html>
