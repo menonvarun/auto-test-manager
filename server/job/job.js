@@ -1,14 +1,16 @@
 var fs = require('fs');
 var TestManager = require('../../test_manager');
+var util = TestManager.Utils.util;
 
 var Job = function(data){
 	this.jobFolderPath = data.folderPath;
 	this.jobNumber = data.jobNumber;
 	this.status = Job.STATUS_NOT_STARTED;
+	this.clientConfig = data.client;
+	this.sourceCode = data.sourceCode;
 	this.jobParams = (typeof(data.params) != 'undefined') ? data.params : {};	
 	this.init();	
-	this.codeManager = new TestManager.CodeManager(this.jobParams);
-	this.jobLogger = new TestManager.JobManager.JobLogger(this);
+	
 };
 
 Job.prototype = {
@@ -22,6 +24,8 @@ Job.prototype = {
 			fs.mkdirSync(this.featureFolderPath);
 			fs.mkdirSync(this.reportsFolderPath);
 			fs.writeFileSync(this.configFilePath,this.toString());
+			util.copyRecursiveSync(Job.BASE_NODE_MODULE_DIR,this.jobFolderPath + "/" +"node_modules");
+			
 		},
 		
 		getJobPath : function getJobPath(){
@@ -52,9 +56,6 @@ Job.prototype = {
 				return true;
 			return false;				
 		},
-		
-		
-		
 };
 
 Job.STATUS_NOT_STARTED = "Not Started";
@@ -64,5 +65,6 @@ Job.STEP_DEF_FOLDER_NAME = "step-defnitions";
 Job.FEATURE_FOLDER_NAME = "features";
 Job.REPORTS_FOLDER_NAME = "reports";
 Job.CONFIG_FILE_NAME = "job.config";
+Job.BASE_NODE_MODULE_DIR = "./resources/node_modules";
 
 module.exports = Job;

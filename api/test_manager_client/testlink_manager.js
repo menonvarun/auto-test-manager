@@ -4,7 +4,7 @@ var TestlinkManager = function(params){
 };
 
 TestlinkManager.prototype = {
-		downloadFeatureFiles : function downloadFeatureFiles(data, pathToDownload){
+		downloadFeatureFiles : function downloadFeatureFiles(pathToDownload){
 			/*this.client.getTestCasesForTestSuite(params, function(result) {
 				result.map(function(testcase) {
 					if (testcase.struct.external_id == "123-1") {

@@ -33,7 +33,6 @@ TestLinkExecutorClient.prototype = {
 				if (testcase.struct.external_id == "123-1") {
 					params.testcaseid = testcase.struct.id;
 					delete params.method;
-					console.log(params);
 					var externalid = testcase.struct.external_id;
 					// console.log(testcase.struct.external_id+" id iod dod");
 					new TestLinkAPI(params.devKey, params.rpcUrl)

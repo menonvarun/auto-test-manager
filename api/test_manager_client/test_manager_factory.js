@@ -1,8 +1,12 @@
-var TestLinkAPI = require('testlink-api-client/lib/testlinkapi.js');
+var TestLinkAPI = require('testlink-api-client');
+
 
 module.exports = TestManagerFactory = function(params) {
 	this.params = params;
 };
+
+TestManagerFactory.TestLinkManager = require('./testlink_manager');
+TestManagerFactory.FolderManagerClient = require('./folder_manager_client');
 
 TestManagerFactory.prototype = {
 
@@ -11,9 +15,13 @@ TestManagerFactory.prototype = {
 		var client;
 		switch (this.params.tool) {
 		case 'testlink':
-			client = new TestLinkAPI(this.params.devKey, this.params.rpcUrl);
+			client = new TestManagerFactory.TestlinkManager(this.params);
 			
 			break;
+		case 'folder':
+			client = new TestManagerFactory.FolderManagerClient(this.params);
+			break; 
+			
 		default:
 			throw "Client '"+this.params.tool+"' not supported by the system";
 		}
@@ -23,5 +31,4 @@ TestManagerFactory.prototype = {
 
 };
 
-TestManagerFactory.TestLinkManager = require('./testlink_manager');
 module.exports = TestManagerFactory;

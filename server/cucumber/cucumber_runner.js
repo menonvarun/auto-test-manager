@@ -6,7 +6,7 @@ var CucumberRunner = function(){
 };
 
 CucumberRunner.prototype = {
-		runTests : function runTests(params){
+		runTests : function runTests(params,callback){
 			var cucumberConfig = new CucumberConfig({
 				"featureFilePath":params.featureFilePath,
 				"stepDefinitionPath":params.stepDefinitionPath});
@@ -14,7 +14,7 @@ CucumberRunner.prototype = {
 			
 			var runtime   = Cucumber.Runtime(cucumberConfig);
 		    runtime.attachListener(formatter);
-		    runtime.start(function(){});
+		    runtime.start(callback);
 		}
 		
 };
