@@ -1,0 +1,15 @@
+{
+  "name": "auto-test-manager",
+  "description": "Test manager for automation tests",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "cucumber": "x.x",
+    "gift": "x.x",
+    "JSONPath": "x.x",
+    "nopt": "x.x",
+    "path": "x.x",
+    "socket.io": "x.x",
+    "testlink-api-client": "x.x"
+  }
+}
